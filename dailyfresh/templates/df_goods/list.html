@@ -1,0 +1,81 @@
+{% extends 'df_goods/base.html' %}
+
+{% block head %}
+<script>
+ $(function() {
+    // ajax
+     $('.add_goods').click(function () {
+        goodsid = $(this).attr('id')
+        url = '/cart/add' + goodsid + '_1/';
+        // $(this).prop('href',url)
+        // ajax
+         $.get(url, function (data) {
+             $('#show_count').text(data.cartcount)
+         })
+     })
+ })
+</script>
+{% endblock head%}
+
+
+
+{% block list %}
+
+        <div class="r_wrap fr clearfix">
+            <div class="sort_bar">
+                <a href="/list{{ typeid }}_1_1/"
+                {% if sort == 1 %}class="active"{% endif %}>默认
+                </a>
+                <a href="/list{{ typeid }}_1_2/"
+                {% if sort == 2 %}class="active"{% endif %}>价格
+                </a>
+                <a href="/list{{ typeid }}_1_3/"
+                {% if sort == 3 %}class="active"{% endif %}>人气
+                </a>
+            </div>
+
+            <ul class="goods_type_list clearfix">
+                {% for g in page_goods %}
+                <li>
+                    <a href="/{{ g.id }}"><img src="/static/{{ g.gpic }}"></a>
+                    <h4><a href="/{{ g.id }}">{{ g.gtitle }}</a></h4>
+                    <div class="operate">
+                        <span class="prize">￥ {{ g.gprice }}</span>
+                        <span class="unit">/{{ g.gunit }}</span>
+                        {% if request.session.user_name %}
+                        <!-- <a href="/cart/add{{g.id}}_1" class="add_goods" title="加入购物车" id="{{g.id}}"></a> -->
+                        <!-- 使用ajax -->
+                        <a href="javascript:;" class="add_goods" title="加入购物车" id="{{g.id}}"></a>
+                        {% else %}
+                        <a href="/user/login/" class="add_goods" title="加入购物车" id="{{g.id}}"></a>
+                        {% endif %}
+                    </div>
+                </li>
+                {% endfor %}
+            </ul>
+
+            <div class="pagenation">
+                {% if page_goods.has_previous %}
+                <a href="/list{{typeid}}_{{page_goods.previous_page_number}}_{{sort}}">&lt;上一页</a>
+                {% else %}
+                <a href="#">&lt;当前页&gt;</a>
+                {% endif %}
+
+                {%for pindex in page_list%}
+                <!--如果选择的是当前页，则标记为活动样式-->
+                {%if pindex == pageindex%}
+                <a href="#" class="active">{{pindex}}</a>
+                {%else%}
+                <a href="/list{{typeid}}_{{pindex}}_{{sort}}">{{pindex}}</a>
+                {%endif%}
+                {%endfor%}
+
+                {% if page_goods.has_next %}
+                <a href="/list{{typeid}}_{{page_goods.next_page_number}}_{{sort}}">下一页&gt;</a>
+                {% else %}
+                <a href="#">&lt;没有咯&gt;</a>
+                {% endif %}
+            </div>
+
+        </div>
+{% endblock list %}

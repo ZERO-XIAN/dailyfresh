@@ -1,0 +1,69 @@
+{% extends 'df_goods/base.html' %}
+
+
+{% block head %}
+<script>
+ $(function() {
+    // ajax
+     $('.add_goods').click(function () {
+        goodsid = $(this).attr('id')
+        url = '/cart/add' + goodsid + '_1/';
+        // $(this).prop('href',url)
+        // ajax
+         $.get(url, function (data) {
+             $('#show_count').text(data.cartcount)
+         })
+     })
+ })
+</script>
+{% endblock head%}
+
+
+
+
+{% block content %}
+        <div class="main_wrap clearfix">
+            <ul class="goods_type_list clearfix" style="width: auto">
+                {% for item in page %}
+                <li>
+                    <a href="/{{ item.object.id }}/"><img src="/static/{{ item.object.gpic }}"></a>
+                    <h4><a href="/{{ item.object.id }}/">{{ item.object.gtitle }}</a></h4>
+                    <div class="operate">
+                        <span class="prize">￥ {{ item.object.gprice }}</span>
+                        <span class="unit">/{{ item.object.gunit }}/</span>
+                        {% if request.session.user_name %}
+                        <!-- <a href="/cart/add{{g.id}}_1" class="add_goods" title="加入购物车" id="{{g.id}}"></a> -->
+                        <!-- 使用ajax -->
+                        <a href="javascript:;" class="add_goods" title="加入购物车" id="{{item.object.id}}"></a>
+                        {% else %}
+                        <a href="/user/login/" class="add_goods" title="加入购物车" id="{{item.object.id}}"></a>
+                        {% endif %}
+                    </div>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+
+        <div class="pagenation">
+            {% if page.has_previous %}
+            <a href="/search/?q={{ query }}&amp;page={{ page.previous_page_number }}">&lt;上一页</a>
+            {% else %}
+            <a href="#">&lt;当前页&gt;</a>
+            {% endif %}
+
+            {%for pindex in paginator.page_range%}
+            <!--如果选择的是当前页，则标记为活动样式-->
+            {%if pindex == pageindex%}
+            <a href="#" class="active">{{pindex}}</a>
+            {%else%}
+            <a href="/search/?q={{ query }}&amp;page={{pindex}}">{{pindex}}</a>
+            {%endif%}
+            {%endfor%}
+
+            {% if page.has_next %}
+            <a href="/search/?q={{ query }}&amp;page={{ page.next_page_number }}">下一页&gt;</a>
+            {% else %}
+            <a href="#">&lt;没有咯&gt;</a>
+            {% endif %}
+        </div>
+{% endblock content %}

@@ -1,0 +1,81 @@
+{%extends 'base_foot.html'%}
+
+
+{% block header %}
+<div class="header_con">
+    <div class="header">
+        <div class="welcome fl">欢迎来到天天生鲜!</div>
+        <div class="fr">
+            <!-- 登录 -->
+            <!-- default 如果值不存在，则使用默认值代替 -->
+            <!-- if request.session.user_name|default:'' != '' -->
+            {% if request.session.user_name %}
+            <div class="user_link fl">
+                <a href="/user/info">欢迎您：{{request.session.user_name}}</a>
+                <span>|</span>
+                <a href="/user/logout/">退出</a>
+                <span>|</span>
+                <a href="/user/info">用户中心</a>
+                <span>|</span>
+                <a href="/cart/">我的购物车</a>
+                <span>|</span>
+                <a href="/user/user_center_order&1/">我的订单</a>
+            </div>
+            <!-- 未登录 -->
+            {% else %}
+            <div class="login_btn fl">
+                <a href="/user/login/">登录</a>
+                <span>|</span>
+                <a href="/user/register">注册</a>
+                <!-- <span>|</span> -->
+                <!-- <a href="/user/info">用户中心</a> -->
+                <!-- <span>|</span> -->
+                <!-- <a href="/cart/">我的购物车</a> -->
+                <!-- <span>|</span> -->
+                <!-- <a href="/user/user_center_order&1/">我的订单</a> -->
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<div class="search_bar clearfix">
+    <a href="/" class="logo fl"><img src="/static/images/logo.png"></a>
+
+    <!-- 不同页面header有所不同 -->
+    <!-- 用户中心视图 -->
+    {% if page_name %}
+    <div class="sub_page_name fl">{{title}}</div>
+    <div class="search_con fr">
+        <form method='get' action="/search/" target="_blank">
+            <input type="text" class="input_text fl" name="q" placeholder="搜索商品">
+            <input type="submit" class="input_btn fr" name="" value="搜索">
+        </form>
+    </div>
+    {% endif %}
+
+
+    <!-- 主页和商品页 -->
+    {% if guest_cart %}
+    <div class="search_con fl">
+        <form method='get' action="/search/" target="_blank">
+            <input type="text" class="input_text fl" name="q" placeholder="搜索商品">
+            <input type="submit" class="input_btn fr" name="" value="搜索">
+        </form>
+    </div>
+
+    <div class="guest_cart fr">
+        {% if request.session.user_name %}
+            <a href="/cart/" class="cart_name fl">我的购物车</a>
+            <div class="goods_count fl" id="show_count">{{request.session.cartcount|default:'0'}}</div>
+        {% endif %}
+    </div>
+
+    {% endif %}
+</div>
+{% endblock header %}
+
+
+{% block body %}
+{% block content %}{% endblock content %}
+{% endblock body %}

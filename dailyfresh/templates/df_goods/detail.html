@@ -1,0 +1,132 @@
+{% extends 'df_goods/base.html' %}
+{%block head%}
+<script type="text/javascript">
+
+    $(function(){
+
+        // !!!!!刷新后数量不会重置,价格重置,需要解决这个bug
+
+        //刷新页面后数量重置为1
+        // $('.num_show').val(1)
+
+        // 刷新后直接执行totalprices()函数,修正总价
+        totalprices()
+
+        // // 当失去焦点时执行
+        // $('.num_show').blur(function(){
+        //  num = parseInt($('.num_show').val())
+        //  price = parseFloat($('#gprice').text())
+        //  total = num*price
+        //  // toFixed() 方法可把 Number 四舍五入为指定小数位数的数字。
+        //  $('#gtotal').text(total.toFixed(2)+'元')
+        // })
+
+        // 不直接执行函数,而是失去焦点时才执行函数是为了实现手动输入数量总价也会变的功能
+        $('.num_show').blur(totalprices)
+
+
+        $('#buy_btn').click(function(){
+            num = $('.num_show').val();
+            url = '/cart/add{{ goods.id }}_'+num+'/';
+            $(this).prop('href',url)
+        })
+
+
+        //加入购物车 
+        $('#add_cart').click(function () {
+            num = $('.num_show').val();
+            url = '/cart/add{{ goods.id }}_'+num+'/';
+            // $(this).prop('href',url)
+
+            // ajax
+            $.get(url, function (data) {
+                $('#show_count').text(data.cartcount)
+            })
+        })
+
+    })
+
+    function totalprices(){
+        num = parseInt($('.num_show').val())
+        price = parseFloat($('#gprice').text())
+        total = num*price
+        // toFixed() 方法可把 Number 四舍五入为指定小数位数的数字。
+        $('#gtotal').text(total.toFixed(2)+'元')
+    }
+
+    // 数量加
+    function add(){
+        num = parseInt($('.num_show').val())
+        $('.num_show').val(num+1)
+        // 失去焦点
+        $('.num_show').blur()
+    }
+
+    // 数量减
+    function minus(){
+        num = parseInt($('.num_show').val())
+        if (num>1){
+        $('.num_show').val(num-1)
+        }
+        // 失去焦点
+        $('.num_show').blur()
+    }
+
+
+
+
+</script>
+{%endblock head%}
+
+{% block detail %}
+    <div class="goods_detail_con clearfix">
+        <div class="goods_detail_pic fl"><img src="/static/{{ goods.gpic }}"></div>
+
+        <div class="goods_detail_list fr">
+            <h3>{{ goods.gtitle }}</h3>
+            <p>{{ goods.gsubtitle }}</p>
+            <div class="prize_bar">
+                <span class="show_pirze">¥<em id='gprice'>{{ goods.gprice }}元</em></span>
+                <span class="show_unit">单  位：{{ goods.gunit }}</span>
+            </div>
+            <div class="goods_num clearfix">
+                <div class="num_name fl">数 量：</div>
+                <div class="num_add fl">
+                    <input type="text" class="num_show fl" value="1">
+                    <a href="javascript:add();" class="add fr">+</a>
+                    <a href="javascript:minus();" class="minus fr">-</a>    
+                </div> 
+            </div>
+            <div class="total">总价：<em id='gtotal'>{{ goods.gprice }}元</em></div>
+            <div class="operate_btn">
+                <a href="/cart/add{{g.id}}_1"  class="buy_btn" id="buy_btn">立即购买</a>
+                {% if request.session.user_name %}
+                <!-- <a href="/cart/add{{g.id}}_1" class="add_cart" id="add_cart">加入购物车</a> -->
+                <!-- ajax -->
+                <a href="javascript:;" class="add_cart" id="add_cart">加入购物车</a>
+                {% else %}
+                <a href="/user/login/" class="add_cart" id="add_cart">加入购物车</a>
+                {% endif %}
+
+            </div>
+        </div>
+    </div>
+{% endblock detail %}
+
+{% block list %}
+        <div class="r_wrap fr clearfix">
+            <ul class="detail_tab clearfix">
+                <li class="active">商品介绍</li>
+                <li>评论</li>
+            </ul>
+
+
+            <div class="tab_content">
+                <dl>
+                    <dt>商品详情：</dt>
+                    <dd>{{ goods.gcontent|safe }}</dd>
+                </dl>
+            </div>
+        </div>
+{% endblock list %}
+
